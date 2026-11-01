@@ -8,14 +8,17 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
@@ -38,17 +41,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.simpleride.presentation.ui.design_system.Hmi
+import com.example.simpleride.presentation.ui.design_system.MonoText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 data class SnackBarData(
     val message: String,
@@ -92,9 +101,11 @@ fun SnackBar(
 ) {
     val coroutineScope = rememberCoroutineScope()
     var isDragging by remember { mutableStateOf(false) }
+    val shape = RoundedCornerShape(16.dp)
 
     AnimatedVisibility(
         visible = data != null && !isDragging,
+        modifier = modifier,
         enter = slideInVertically(
             initialOffsetY = { -it },
             animationSpec = tween(
@@ -111,37 +122,30 @@ fun SnackBar(
         ) + shrinkVertically(shrinkTowards = Alignment.Top),
     ) {
         data?.let { snackBarData ->
-            // Auto-dismiss after duration (only if no action)
             LaunchedEffect(snackBarData) {
                 if (snackBarData.action == null) {
-                    delay(snackBarData.duration)
+                    delay(snackBarData.duration.milliseconds)
                     onDismiss()
                 }
             }
 
-            val colors = getSnackBarColors(snackBarData.type)
+            val accent = hmiAccentFor(snackBarData.type.name)
+            val glyph = hmiGlyphFor(snackBarData.type.name)
 
             Row(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 12.dp)
-                    .widthIn(max = 500.dp)
+                    .widthIn(max = 560.dp)
                     .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                colors.background,
-                                colors.background.copy(alpha = 0.85f)
-                            )
-                        )
-                    )
+                    .clip(shape)
+                    .background(accent.copy(alpha = 0.12f).compositeOver(Hmi.Panel))
+                    .border(1.dp, accent.copy(alpha = 0.7f), shape)
                     .onSizeChanged(onSizeChange)
                     .pointerInput(snackBarData) {
                         detectHorizontalDragGestures(
                             onDragStart = { isDragging = true },
                             onDragEnd = { isDragging = false },
                             onHorizontalDrag = { _, dragAmount ->
-                                // 50dp threshold - intentional gesture, not accidental touch
                                 if (dragAmount > 50 || dragAmount < -50) {
                                     isDragging = false
                                     onDismiss()
@@ -149,96 +153,145 @@ fun SnackBar(
                             }
                         )
                     }
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Icon with semantic color
-                Icon(
-                    imageVector = colors.icon,
-                    contentDescription = snackBarData.type.name,
-                    tint = colors.iconColor,
-                    modifier = Modifier.size(22.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Hmi.PanelHi)
+                        .border(1.dp, accent.copy(alpha = 0.5f), RoundedCornerShape(10.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = glyph, color = accent, fontSize = 16.sp)
+                }
 
-                // Message text (flexible width)
-                Text(
+                MonoText(
                     text = snackBarData.message,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium
-                    ),
-                    color = colors.content,
+                    color = Hmi.Text,
+                    size = 13.sp,
+                    weight = FontWeight.Medium,
                     modifier = Modifier.weight(1f)
                 )
 
-                // Action button or close icon
                 if (snackBarData.action != null) {
-                    Text(
-                        text = snackBarData.action.label,
-                        style = MaterialTheme.typography.labelLarge.copy(
-                            fontWeight = FontWeight.SemiBold
-                        ),
-                        color = colors.iconColor,
+                    Box(
                         modifier = Modifier
-                            .clip(MaterialTheme.shapes.small)
+                            .clip(RoundedCornerShape(8.dp))
+                            .border(1.dp, accent.copy(alpha = 0.6f), RoundedCornerShape(8.dp))
                             .clickable {
                                 coroutineScope.launch {
                                     snackBarData.action.onAction()
                                     onDismiss()
                                 }
                             }
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        MonoText(
+                            text = snackBarData.action.label.uppercase(),
+                            color = accent,
+                            size = 11.sp,
+                            weight = FontWeight.Bold
+                        )
+                    }
                 } else {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Dismiss",
-                        tint = colors.content.copy(alpha = 0.6f),
+                    Box(
                         modifier = Modifier
-                            .size(20.dp)
-                            .clip(MaterialTheme.shapes.small)
-                            .clickable { onDismiss() }
-                            .padding(4.dp)
-                    )
+                            .size(28.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { onDismiss() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "✕", color = Hmi.Muted, fontSize = 14.sp)
+                    }
                 }
             }
         }
     }
 }
 
-private data class SnackBarColorScheme(
-    val background: Color,
-    val content: Color,
-    val iconColor: Color,
-    val icon: ImageVector
+
+@Composable
+private fun hmiAccentFor(typeName: String): Color = when (typeName.uppercase()) {
+    "SUCCESS" -> Hmi.Ok
+    "ERROR", "FAILURE", "DANGER" -> Hmi.Danger
+    "WARNING", "WARN" -> Hmi.Warn
+    else -> Hmi.Accent
+}
+
+private fun hmiGlyphFor(typeName: String): String = when (typeName.uppercase()) {
+    "SUCCESS" -> "✓"
+    "ERROR", "FAILURE", "DANGER" -> "⛔"
+    "WARNING", "WARN" -> "▲"
+    else -> "ℹ"
+}
+
+@Preview(
+    name = "Success Snackbar",
+    showBackground = true,
+    backgroundColor = 0xFF101820
 )
+@Composable
+private fun SuccessSnackBarPreview() {
+    SnackBar(
+        data = SnackBarData(
+            message = "Vehicle connected successfully",
+            type = SnackBarType.SUCCESS
+        ),
+        onDismiss = {},
+        onSizeChange = {}
+    )
+}
 
+@Preview(
+    name = "Error Snackbar",
+    showBackground = true,
+    backgroundColor = 0xFF101820
+)
+@Composable
+private fun ErrorSnackBarPreview() {
+    SnackBar(
+        data = SnackBarData(
+            message = "Vehicle connection failed",
+            type = SnackBarType.ERROR
+        ),
+        onDismiss = {},
+        onSizeChange = {}
+    )
+}
 
-private fun getSnackBarColors(type: SnackBarType): SnackBarColorScheme {
-    return when (type) {
-        SnackBarType.SUCCESS -> SnackBarColorScheme(
-            background = Color(0xFF10B981).copy(alpha = 0.95f),
-            content = Color.White,
-            iconColor = Color(0xFFECFDF5),
-            icon = Icons.Default.CheckCircle
-        )
-        SnackBarType.ERROR -> SnackBarColorScheme(
-            background = Color(0xFFEF4444).copy(alpha = 0.95f),
-            content = Color.White,
-            iconColor = Color(0xFFFEE2E2),
-            icon = Icons.Default.Error
-        )
-        SnackBarType.WARNING -> SnackBarColorScheme(
-            background = Color(0xFFF59E0B).copy(alpha = 0.95f),
-            content = Color.White,
-            iconColor = Color(0xFFFEF3C7),
-            icon = Icons.Default.Warning
-        )
-        SnackBarType.INFO -> SnackBarColorScheme(
-            background = Color(0xFF3B82F6).copy(alpha = 0.95f),
-            content = Color.White,
-            iconColor = Color(0xFFDEF2FF),
-            icon = Icons.Default.Info
-        )
-    }
+@Preview(
+    name = "Warning Snackbar",
+    showBackground = true,
+    backgroundColor = 0xFF101820
+)
+@Composable
+private fun WarningSnackBarPreview() {
+    SnackBar(
+        data = SnackBarData(
+            message = "Vehicle signal is unstable",
+            type = SnackBarType.WARNING
+        ),
+        onDismiss = {},
+        onSizeChange = {}
+    )
+}
+
+@Preview(
+    name = "Info Snackbar",
+    showBackground = true,
+    backgroundColor = 0xFF101820
+)
+@Composable
+private fun InfoSnackBarPreview() {
+    SnackBar(
+        data = SnackBarData(
+            message = "Vehicle dashboard is ready",
+            type = SnackBarType.INFO
+        ),
+        onDismiss = {},
+        onSizeChange = {}
+    )
 }
