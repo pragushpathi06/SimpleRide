@@ -1,0 +1,77 @@
+package com.example.simpleride.presentation.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+/* ───────── DARK (matches the screenshot: navy surfaces + cyan accent) ───────── */
+val primaryDark = Color(0xFF19E3FF)              // cyan accent (gauge, brand, selected chip)
+val onPrimaryDark = Color(0xFF003640)
+val primaryContainerDark = Color(0xFF0B3A44)
+val onPrimaryContainerDark = Color(0xFFA8F3FF)
+val secondaryDark = Color(0xFFFFB020)            // warning / amber
+val onSecondaryDark = Color(0xFF3A2600)
+val secondaryContainerDark = Color(0xFF4A3300)
+val onSecondaryContainerDark = Color(0xFFFFDDA0)
+val tertiaryDark = Color(0xFF2BE38B)             // OK / green (battery, SYS OK, LIVE)
+val onTertiaryDark = Color(0xFF00391E)
+val tertiaryContainerDark = Color(0xFF0B3A2A)
+val onTertiaryContainerDark = Color(0xFFA6F5CC)
+val errorDark = Color(0xFFFF4D5E)                // kill switch / fault
+val onErrorDark = Color(0xFF4A0008)
+val errorContainerDark = Color(0xFF6B0A16)
+val onErrorContainerDark = Color(0xFFFFD9DC)
+val backgroundDark = Color(0xFF040810)
+val onBackgroundDark = Color(0xFFE6EEF7)
+val surfaceDark = Color(0xFF07111C)
+val onSurfaceDark = Color(0xFFE6EEF7)
+val surfaceVariantDark = Color(0xFF1B2A3F)
+val onSurfaceVariantDark = Color(0xFF9FB0C4)
+val outlineDark = Color(0xFF7A8CA3)              // muted labels
+val outlineVariantDark = Color(0xFF1B2A3F)       // card borders
+val scrimDark = Color(0xFF000000)
+val inverseSurfaceDark = Color(0xFFE6EEF7)
+val inverseOnSurfaceDark = Color(0xFF0B1523)
+val inversePrimaryDark = Color(0xFF0AA2FF)       // gauge gradient start (blue)
+val surfaceDimDark = Color(0xFF040810)
+val surfaceBrightDark = Color(0xFF1A2236)
+val surfaceContainerLowestDark = Color(0xFF060D16)
+val surfaceContainerLowDark = Color(0xFF07111C)
+val surfaceContainerDark = Color(0xFF0B1523)     // cards
+val surfaceContainerHighDark = Color(0xFF101C2E) // chips / buttons
+val surfaceContainerHighestDark = Color(0xFF1A2236) // gauge + bar tracks
+
+/* ───────── LIGHT (cool counterpart, optional) ───────── */
+val primaryLight = Color(0xFF00687A)
+val onPrimaryLight = Color(0xFFFFFFFF)
+val primaryContainerLight = Color(0xFFA8F0FF)
+val onPrimaryContainerLight = Color(0xFF001F26)
+val secondaryLight = Color(0xFF8A5A00)
+val onSecondaryLight = Color(0xFFFFFFFF)
+val secondaryContainerLight = Color(0xFFFFDDA8)
+val onSecondaryContainerLight = Color(0xFF2C1800)
+val tertiaryLight = Color(0xFF006C45)
+val onTertiaryLight = Color(0xFFFFFFFF)
+val tertiaryContainerLight = Color(0xFF8AF8C0)
+val onTertiaryContainerLight = Color(0xFF002113)
+val errorLight = Color(0xFFBA1A2B)
+val onErrorLight = Color(0xFFFFFFFF)
+val errorContainerLight = Color(0xFFFFDADC)
+val onErrorContainerLight = Color(0xFF410008)
+val backgroundLight = Color(0xFFF5FAFD)
+val onBackgroundLight = Color(0xFF0B1523)
+val surfaceLight = Color(0xFFF5FAFD)
+val onSurfaceLight = Color(0xFF0B1523)
+val surfaceVariantLight = Color(0xFFD9E4EC)
+val onSurfaceVariantLight = Color(0xFF3C4A5A)
+val outlineLight = Color(0xFF6B7C8F)
+val outlineVariantLight = Color(0xFFC3CFDA)
+val scrimLight = Color(0xFF000000)
+val inverseSurfaceLight = Color(0xFF1B2A3F)
+val inverseOnSurfaceLight = Color(0xFFE6EEF7)
+val inversePrimaryLight = Color(0xFF4FD8EB)
+val surfaceDimLight = Color(0xFFD5DDE3)
+val surfaceBrightLight = Color(0xFFF5FAFD)
+val surfaceContainerLowestLight = Color(0xFFFFFFFF)
+val surfaceContainerLowLight = Color(0xFFF0F6FA)
+val surfaceContainerLight = Color(0xFFEAF1F6)
+val surfaceContainerHighLight = Color(0xFFE4ECF2)
+val surfaceContainerHighestLight = Color(0xFFDDE6ED)
